@@ -141,7 +141,7 @@ end
 Create a new [Kinova Gen3 lite](https://www.kinovarobotics.com/en/products/gen3-lite-robot) robot.
 """
 function create_robot_kinova_gen3(model::String, vis::Visualizer)
-    choices = ["gen3", "gen3_lite_gen3_lite_2f", "gen3_robotiq_2f_85", "gen3_robotiq_2f_140"]
+    choices = ["gen3", "gen3_lite_gen3_lite_2f", "gen3_robotiq_2f_85", "gen3_robotiq_2f_140", "gen3_360", "gen3_360_pl"]
     if model ∉ choices
         msg = """
         Argument `model` provided value \"$(model)\" is not valid.

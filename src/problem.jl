@@ -160,6 +160,49 @@ function export_trajectory(file::String, problem::Problem, robot::Robot, x)
     ))
 end
 
+"""
+get_tqvau(file, problem, robot, x)
+
+Split problem output x into t, q, v, a, u
+"""
+function get_tqvau(problem::Problem, robot::Robot, x)
+    nₓ = robot.n_q + robot.n_v + robot.n_τ  # dimension of each mesh point
+
+    ts = range(0, length=problem.num_knots, step=problem.dt)
+
+    # Helper ranges
+    ind_q = hcat([range(1 + (i * nₓ)                        , length=robot.n_q) for i = (1:problem.num_knots    ) .- 1]...)
+    ind_v = hcat([range(1 + (i * nₓ) + robot.n_q            , length=robot.n_v) for i = (1:problem.num_knots    ) .- 1]...)
+    ind_τ = hcat([range(1 + (i * nₓ) + robot.n_q + robot.n_v, length=robot.n_τ) for i = (1:problem.num_knots - 1) .- 1]...)
+
+    q = transpose(x[ind_q])
+    v = transpose(x[ind_v])
+    a = transpose(zeros(size(x[ind_v])))
+    u = transpose(x[ind_τ])
+    u = vcat(u, zeros(1,size(u)[2]))
+
+    return ts, q, v, a, u
+
+end
+
+"""
+    export_trajectory_as_txt(file, problem, robot, x)
+
+Export a trajectory to a comma delimited `.txt` file.
+"""
+function export_trajectory_as_txt(file::String, problem::Problem, robot::Robot, x)
+
+    ts, q, v, a, u = get_tqvau(problem, robot, x)
+
+    tqvau = hcat(ts, q, v, a, u)
+
+    writedlm(file, tqvau, ',')
+    writedlm("/home/gaussian/cmu_ri_phd/phd_misc/cito_ws/logs/bkp/shelf/tora_u.txt", u, ',')
+    writedlm("/home/gaussian/cmu_ri_phd/phd_misc/cito_ws/logs/bkp/shelf/tora_x.txt", q, ',')
+
+end
+
+
 export
     Problem,
     fix_joint_positions!,
@@ -167,4 +210,6 @@ export
     fix_joint_torques!,
     constrain_ee_position!,
     show_problem_info,
-    export_trajectory
+    export_trajectory,
+    get_tqvau,
+    export_trajectory_as_txt

@@ -1,6 +1,6 @@
 using Pkg
-Pkg.activate(joinpath(@__DIR__, ".."))
-Pkg.instantiate()
+# Pkg.activate(joinpath(@__DIR__, ".."))
+# Pkg.instantiate()
 
 using Revise
 using TORA
@@ -19,7 +19,8 @@ setprop!(vis["/Cameras/default/rotated/<object>"], "fov", 40)
 open(vis)  # Show the viewer in a separate tab
 
 robot = TORA.create_robot_kuka("iiwa14", vis)
-problem = TORA.Problem(robot, 301, 1/150)
+# problem = TORA.Problem(robot, 301, 1/150)
+problem = TORA.Problem(robot, 2001, 1/500)
 
 # Constrain initial and final joint velocities to zero
 TORA.fix_joint_velocities!(problem, robot, 1, zeros(robot.n_v))
@@ -78,3 +79,6 @@ TORA.play_trajectory(vis, problem, robot, x)
 TORA.plot_results(problem, robot, x)
 
 TORA.plot_log(solver_log)
+
+traj_file = "/home/gaussian/cmu_ri_phd/phd_misc/cito_ws/logs/bkp/shelf/tora.txt";
+TORA.export_trajectory_as_txt(traj_file, problem, robot, x)
